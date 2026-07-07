@@ -1,7 +1,12 @@
 [project]
 name = "ai-workflow-kit"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.2.0"
+description = "用于文章整理与多平台成稿的模板合并工具"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+  "pyyaml>=6.0.2",
+]
+
+[tool.uv]
+package = false

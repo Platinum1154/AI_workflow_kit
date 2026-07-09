@@ -27,7 +27,7 @@
 
 # 非技术方案步骤
 
-1. 先填写 `templates/article-to-platform-input.example.yaml`，把所有输入字段补齐。
+1. 先填写 `templates/article-to-platform-input.example.yaml`，通常至少只需要补 `source_article`，其他字段按需补充。
 2. 打开 `prompts/article-structuring.md`，整理原始文章。
 3. 保存整理结果，作为后续平台成稿的中间材料。
 4. 打开 `prompts/platform-copywriting.md`，把中间材料转换成目标平台文稿。
@@ -39,7 +39,7 @@
 
 1. 运行 `uv sync` 安装依赖。
 2. 运行 `uv run python scripts/run_workflow.py init` 生成输入模板。
-3. 填写输入 YAML，把平台要求、长度、输出项和保护规则补齐。
+3. 填写输入 YAML。通常至少填原文和 `target_platform`；脚本会自动注入该平台的预设规则，其他要求按需补充。
 4. 如有需要，可在输入 YAML 的中间字段中补充“整理后的文章材料”或“平台文稿”。
 5. 运行 `uv run python scripts/run_workflow.py run --input <你的输入文件>`。
 6. 脚本会自动完成三份 prompt 模板的字段合并。
@@ -77,4 +77,4 @@
 - 输入字段是否已经填完整？
 - 三个阶段的合并结果是否都成功生成？
 - 中间字段是否需要后续手动补充？
-- 平台要求和保护规则是否都正确进入模板？
+- 平台预设规则、用户补充要求和保护规则是否都正确进入模板？

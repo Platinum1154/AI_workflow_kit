@@ -1,0 +1,245 @@
+default:
+  canonical_name: "通用图文平台"
+  aliases:
+    - "通用"
+    - "默认"
+    - "default"
+  recommended_length: "800-1500字"
+  default_output_parts:
+    - "标题"
+    - "正文"
+    - "结尾总结"
+  headline_requirement: "标题准确概括主题，不夸张，不制造虚假悬念。"
+  hook_requirement: "开头尽快说清楚这篇内容适合谁、解决什么问题、核心结论是什么。"
+  ending_requirement: "结尾做总结收束，必要时给出行动建议或判断框架。"
+  tag_requirement: "如平台支持标签，再补少量高相关标签；不为了凑数硬加。"
+  tone_rules:
+    - "信息表达清楚，避免过度营销化和空话。"
+    - "优先保证可读性和信息密度。"
+  structure_rules:
+    - "结构要清晰，段落之间有明确推进关系。"
+    - "先核心结论，再展开原因、案例、建议。"
+  title_rules:
+    - "标题与正文内容严格一致。"
+    - "优先突出问题、判断、对象或结果。"
+  opening_rules:
+    - "开头不要铺垫过长。"
+    - "前两段内让读者知道值不值得继续看。"
+  ending_rules:
+    - "结尾避免突然中断。"
+    - "可收束重点，也可给出后续判断方法。"
+  interaction_rules:
+    - "互动表达自然，不强行引导。"
+  avoid_rules:
+    - "不要写成明显广告或硬转化文案。"
+    - "不要为了平台风格牺牲事实准确性。"
+
+platforms:
+  zhihu:
+    canonical_name: "知乎"
+    aliases:
+      - "zhihu"
+      - "知乎文章"
+      - "知乎回答"
+    recommended_length: "1500-2500字"
+    default_output_parts:
+      - "标题"
+      - "开头结论"
+      - "正文"
+      - "结尾总结"
+    headline_requirement: "标题避免标题党，优先突出问题、判断、适用人群或方法价值。"
+    hook_requirement: "开头 300 字内给出明确结论，并说明适合谁、解决什么问题。"
+    ending_requirement: "结尾总结核心判断，最好给出可收藏的行动清单、判断框架或注意事项。"
+    tag_requirement: "如需要标签，控制在 3-5 个高相关主题词内。"
+    tone_rules:
+      - "有判断，但表达克制，避免情绪化喊话。"
+      - "兼顾观点和论据，避免只有态度没有支撑。"
+    structure_rules:
+      - "适合采用结论前置 + 分点展开。"
+      - "每一节都要让读者获得具体信息、方法或判断标准。"
+    title_rules:
+      - "可使用问题导向、经验复盘、方法拆解、观点分析等知乎常见标题方式。"
+      - "避免空泛鸡汤和单纯情绪刺激。"
+    opening_rules:
+      - "开头直接回答读者最关心的问题。"
+      - "尽快交代作者判断与适用边界。"
+    ending_rules:
+      - "结尾适合收束观点，并补一份可执行清单。"
+    interaction_rules:
+      - "可以自然引导收藏、讨论，但不要硬性索赞。"
+    avoid_rules:
+      - "避免跨界强答、无依据下结论、堆砌材料不表达观点。"
+
+  xiaohongshu:
+    canonical_name: "小红书"
+    aliases:
+      - "red"
+      - "RED"
+      - "xiaohongshu"
+      - "小红书笔记"
+    recommended_length: "300-800字"
+    default_output_parts:
+      - "标题"
+      - "开头钩子"
+      - "正文"
+      - "结尾互动"
+      - "标签"
+    headline_requirement: "标题要具体、有感知点，优先突出结果、反差、清单、避坑或适用对象，但不要夸大。"
+    hook_requirement: "开头首屏就给痛点、结果或结论，不要长铺垫。"
+    ending_requirement: "结尾适合用一句总结 + 轻量互动或补充提醒。"
+    tag_requirement: "补 5-8 个高相关标签，优先话题词、场景词、人群词。"
+    tone_rules:
+      - "表达要更生活化、更贴近使用场景。"
+      - "允许更强的画面感和体验感，但不要失真。"
+    structure_rules:
+      - "适合短段落、小清单、分点避坑、前后对比。"
+      - "一段只讲一个信息点，方便快速扫读。"
+    title_rules:
+      - "标题要让读者立刻知道能获得什么。"
+      - "可突出踩坑、清单、体验、适合谁。"
+    opening_rules:
+      - "首句直接讲结果或痛点。"
+      - "前 3 句内交代场景、人群和价值。"
+    ending_rules:
+      - "结尾可以用轻互动，但不要显得用力过猛。"
+    interaction_rules:
+      - "可自然引导评论、收藏、交流体验。"
+    avoid_rules:
+      - "避免写成知乎长文口吻。"
+      - "避免过度说教、信息过载、营销腔太重。"
+
+  wechat_official:
+    canonical_name: "公众号"
+    aliases:
+      - "微信公众号"
+      - "微信公号"
+      - "wechat"
+      - "公众号文章"
+    recommended_length: "1200-2500字"
+    default_output_parts:
+      - "标题"
+      - "导语"
+      - "正文"
+      - "结尾总结"
+    headline_requirement: "标题清楚传达主题和价值，可以有吸引力，但不要像短视频标题。"
+    hook_requirement: "导语要快速把读者带入问题与背景，前几段内明确本文主旨。"
+    ending_requirement: "结尾适合总结、升华或做温和行动引导。"
+    tag_requirement: "公众号正文通常不强依赖标签，可省略。"
+    tone_rules:
+      - "更适合完整表达、稳定节奏、相对耐读的书面化风格。"
+      - "允许适度叙事，但不要拖沓。"
+    structure_rules:
+      - "适合导语 + 分节展开 + 结尾总结。"
+      - "段落之间要有过渡，整体阅读体验要顺。"
+    title_rules:
+      - "标题可以兼顾传播性和稳定感。"
+      - "避免过短、过炸、过碎。"
+    opening_rules:
+      - "开头可以有轻背景，但不要绕太久。"
+      - "尽量在前几段完成问题提出和立场交代。"
+    ending_rules:
+      - "结尾可以补一句价值收束或延展思考。"
+    interaction_rules:
+      - "互动引导要轻，不要破坏整体阅读感。"
+    avoid_rules:
+      - "避免碎片化过强。"
+      - "避免整篇像平台搬运稿或短促笔记。"
+
+  weibo:
+    canonical_name: "微博"
+    aliases:
+      - "weibo"
+      - "新浪微博"
+    recommended_length: "150-500字"
+    default_output_parts:
+      - "标题或开头话题"
+      - "正文"
+      - "标签"
+    headline_requirement: "如果需要标题或首句，要尽快抛出观点、事件或讨论点。"
+    hook_requirement: "首句要快，能立刻进入话题。"
+    ending_requirement: "结尾可以抛问题、留讨论点或补一句立场。"
+    tag_requirement: "保留少量高相关话题标签，避免堆叠。"
+    tone_rules:
+      - "节奏要快，信息点集中。"
+      - "表达可以更直接，但仍要保留边界和准确性。"
+    structure_rules:
+      - "适合一句话观点 + 简短展开 + 讨论引子。"
+      - "尽量控制冗长背景。"
+    title_rules:
+      - "首句本身就要有传播抓力。"
+    opening_rules:
+      - "一上来就进入立场、观察或事件重点。"
+    ending_rules:
+      - "结尾适合抛讨论，不适合大段总结。"
+    interaction_rules:
+      - "可自然制造讨论点，但不要为了争议而争议。"
+    avoid_rules:
+      - "避免太长、太散、像长文摘要。"
+      - "避免为了情绪传播而失真。"
+
+  douyin:
+    canonical_name: "抖音"
+    aliases:
+      - "douyin"
+      - "抖音文案"
+    recommended_length: "120-300字"
+    default_output_parts:
+      - "开场钩子"
+      - "正文"
+      - "结尾引导"
+    headline_requirement: "如果需要标题或封面文案，要突出冲突点、结果点或收益点，但不能夸张失真。"
+    hook_requirement: "前 1-2 句必须抓人，快速给结论、反差或问题。"
+    ending_requirement: "结尾简短有力，可加轻量互动或行动引导。"
+    tag_requirement: "按场景保留少量高相关标签。"
+    tone_rules:
+      - "语言更口语、更短促、更适合朗读。"
+      - "句子尽量短，节奏明显。"
+    structure_rules:
+      - "适合钩子 + 解释 + 结果/建议。"
+      - "信息点不宜太多，聚焦一个核心结论。"
+    title_rules:
+      - "封面感强，但不能脱离正文。"
+    opening_rules:
+      - "开头优先用结果、误区、反差、痛点切入。"
+    ending_rules:
+      - "结尾适合一句总结或一句提醒。"
+    interaction_rules:
+      - "互动要自然短促，不要像直播话术。"
+    avoid_rules:
+      - "避免长句堆叠。"
+      - "避免写成公众号或知乎长文语气。"
+
+  bilibili:
+    canonical_name: "B站"
+    aliases:
+      - "b站"
+      - "Bilibili"
+      - "bilibili"
+      - "B站动态"
+    recommended_length: "300-900字"
+    default_output_parts:
+      - "标题"
+      - "开头说明"
+      - "正文"
+      - "结尾互动"
+    headline_requirement: "标题清楚说明主题，可保留轻松感，但不要浮夸。"
+    hook_requirement: "开头先告诉观众这条内容讲什么、为什么值得看。"
+    ending_requirement: "结尾可做总结，也可自然引导讨论或补充经验。"
+    tag_requirement: "标签按内容领域保留少量核心标签。"
+    tone_rules:
+      - "可以更像真实创作者在交流，允许一定亲和感。"
+      - "专业内容也要避免太板正。"
+    structure_rules:
+      - "适合主题说明 + 分点展开 + 结尾交流。"
+      - "可兼顾信息密度和创作者个性。"
+    title_rules:
+      - "标题既要清楚也要有人味。"
+    opening_rules:
+      - "开头说明内容价值，不要太生硬。"
+    ending_rules:
+      - "结尾可以邀请补充观点或分享经验。"
+    interaction_rules:
+      - "互动表达可以更像同好交流。"
+    avoid_rules:
+      - "避免过于官样文章。"
+      - "避免强营销和强压迫式转化。"

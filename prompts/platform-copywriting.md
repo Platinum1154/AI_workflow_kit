@@ -6,6 +6,8 @@ inputs:
   - source_title
   - structured_article_notes
   - target_platform
+  - platform_rule_name
+  - platform_rule_pack
   - target_audience
   - platform_style_requirements
   - required_output_parts
@@ -61,10 +63,13 @@ outputs:
 目标平台：
 {{target_platform}}
 
+命中的平台预设规则：
+{{platform_rule_pack}}
+
 目标受众：
 {{target_audience}}
 
-平台写作风格要求：
+用户额外补充的平台要求：
 {{platform_style_requirements}}
 
 输出必须包含的部分：
@@ -112,6 +117,7 @@ outputs:
 3. 保留事实核对表
 
 输出要求：
+- 优先级顺序：原意保护与事实准确性 > 用户明确填写的限制 > 平台预设规则 > 一般写作优化。
 - 平台正文要符合目标平台风格，但不能牺牲原意。
 - 保留事实核对表要逐条对应必须保留的事实。
 - 如果某项平台要求会导致原意失真，请明确保守处理。

@@ -14,6 +14,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_PATH = ROOT / "templates" / "article-to-platform-input.example.yaml"
+PLATFORM_RULES_PATH = ROOT / "config" / "platform-rules.yaml"
 DEFAULT_OUTPUT_DIR = ROOT / "outputs"
 
 
@@ -139,46 +140,186 @@ def build_context(config: dict[str, Any]) -> dict[str, str]:
     output = config.get("output", {})
     guardrails = config.get("content_guardrails", {})
     intermediate = config.get("intermediate", {})
+    target_platform = text_or_default(platform.get("target_platform"), "知乎")
+    platform_profile = resolve_platform_profile(target_platform)
 
     context: dict[str, Any] = {
-        "source_title": source.get("source_title", ""),
-        "source_language": source.get("source_language", ""),
-        "article_type": source.get("article_type", ""),
-        "source_article": source.get("source_article", ""),
-        "core_message_must_be_preserved": meaning.get("core_message_must_be_preserved", True),
-        "compression_allowed": meaning.get("compression_allowed", False),
-        "structure_reorganization_allowed": meaning.get("structure_reorganization_allowed", False),
-        "rephrasing_allowed_without_changing_meaning": meaning.get(
-            "rephrasing_allowed_without_changing_meaning", True
+        "source_title": text_or_default(source.get("source_title"), ""),
+        "source_language": text_or_default(source.get("source_language"), "中文"),
+        "article_type": text_or_default(source.get("article_type"), "知识分享文章"),
+        "source_article": text_or_default(source.get("source_article"), ""),
+        "core_message_must_be_preserved": bool_or_default(
+            meaning.get("core_message_must_be_preserved"), True
         ),
-        "new_information_allowed": meaning.get("new_information_allowed", False),
-        "target_platform": platform.get("target_platform", ""),
-        "target_audience": platform.get("target_audience", ""),
-        "platform_style_requirements": platform.get("platform_style_requirements", ""),
-        "length_requirement": platform.get("length_requirement", ""),
-        "required_output_parts": output.get("required_output_parts", []),
-        "headline_requirement": output.get("headline_requirement", ""),
-        "hook_requirement": output.get("hook_requirement", ""),
-        "ending_requirement": output.get("ending_requirement", ""),
-        "tag_requirement": output.get("tag_requirement", ""),
-        "facts_that_must_be_retained": guardrails.get("facts_that_must_be_retained", []),
-        "terms_not_to_change": guardrails.get("terms_not_to_change", []),
-        "extra_constraints": guardrails.get("extra_constraints", ""),
-        "review_focus": config.get("runtime", {}).get(
-            "review_focus",
+        "compression_allowed": bool_or_default(meaning.get("compression_allowed"), False),
+        "structure_reorganization_allowed": bool_or_default(
+            meaning.get("structure_reorganization_allowed"), False
+        ),
+        "rephrasing_allowed_without_changing_meaning": bool_or_default(
+            meaning.get("rephrasing_allowed_without_changing_meaning"), True
+        ),
+        "new_information_allowed": bool_or_default(
+            meaning.get("new_information_allowed"), False
+        ),
+        "target_platform": target_platform,
+        "platform_rule_name": text_or_default(
+            platform_profile.get("canonical_name"), target_platform
+        ),
+        "platform_rule_pack": format_platform_rule_pack(platform_profile),
+        "target_audience": text_or_default(
+            platform.get("target_audience"),
+            "（如未填写，请根据原文判断最适合的核心读者群体）",
+        ),
+        "platform_style_requirements": text_or_default(
+            platform.get("platform_style_requirements"),
+            "（无额外补充要求；如有特殊要求再填写）",
+        ),
+        "length_requirement": text_or_default(
+            platform.get("length_requirement"),
+            text_or_default(platform_profile.get("recommended_length"), "1500-2500字"),
+        ),
+        "required_output_parts": list_or_default(
+            output.get("required_output_parts"),
+            list_or_default(
+                platform_profile.get("default_output_parts"),
+                ["标题", "正文", "结尾总结"],
+            ),
+        ),
+        "headline_requirement": text_or_default(
+            output.get("headline_requirement"),
+            text_or_default(
+                platform_profile.get("headline_requirement"),
+                "避免标题党，突出问题、判断或适用人群。",
+            ),
+        ),
+        "hook_requirement": text_or_default(
+            output.get("hook_requirement"),
+            text_or_default(
+                platform_profile.get("hook_requirement"),
+                "开头尽快给出明确结论，并说明适合谁、解决什么问题。",
+            ),
+        ),
+        "ending_requirement": text_or_default(
+            output.get("ending_requirement"),
+            text_or_default(
+                platform_profile.get("ending_requirement"),
+                "结尾做总结收束，最好给出行动建议或判断框架。",
+            ),
+        ),
+        "tag_requirement": text_or_default(
+            output.get("tag_requirement"),
+            text_or_default(
+                platform_profile.get("tag_requirement"),
+                "如平台需要，再补少量高相关标签；如果不需要可省略。",
+            ),
+        ),
+        "facts_that_must_be_retained": list_or_default(
+            guardrails.get("facts_that_must_be_retained"), []
+        ),
+        "terms_not_to_change": list_or_default(guardrails.get("terms_not_to_change"), []),
+        "extra_constraints": text_or_default(
+            guardrails.get("extra_constraints"),
+            "严格保留原意，不要补充原文没有的新事实、新数据、新案例。",
+        ),
+        "review_focus": text_or_default(
+            config.get("runtime", {}).get("review_focus"),
             "重点检查是否偏离原意、是否遗漏关键事实、是否新增原文没有的信息。",
         ),
-        "structured_article_notes": intermediate.get(
-            "structured_article_notes",
+        "structured_article_notes": text_or_default(
+            intermediate.get("structured_article_notes"),
             "（这里会放整理后的文章材料；当前脚本只负责合并模板，不自动生成此内容）",
         ),
-        "platform_draft": intermediate.get(
-            "platform_draft",
+        "platform_draft": text_or_default(
+            intermediate.get("platform_draft"),
             "（这里会放平台文稿；当前脚本只负责合并模板，不自动生成此内容）",
         ),
     }
 
     return {key: stringify(value) for key, value in context.items()}
+
+
+def resolve_platform_profile(target_platform: str) -> dict[str, Any]:
+    rules = load_yaml(PLATFORM_RULES_PATH)
+    default_profile = rules.get("default", {})
+    platform_profiles = rules.get("platforms", {})
+
+    if not isinstance(default_profile, dict):
+        raise SystemExit("platform-rules.yaml 中的 default 配置格式不正确。")
+    if not isinstance(platform_profiles, dict):
+        raise SystemExit("platform-rules.yaml 中的 platforms 配置格式不正确。")
+
+    normalized_target = normalize_platform_name(target_platform)
+    matched_profile: dict[str, Any] | None = None
+
+    for platform_key, profile in platform_profiles.items():
+        if not isinstance(profile, dict):
+            continue
+        aliases = [platform_key, profile.get("canonical_name", "")]
+        aliases.extend(profile.get("aliases", []))
+        if any(normalize_platform_name(alias) == normalized_target for alias in aliases if alias):
+            matched_profile = profile
+            break
+
+    resolved_profile = dict(default_profile)
+    if matched_profile is not None:
+        resolved_profile.update(matched_profile)
+        resolved_profile["match_status"] = (
+            f"已命中平台预设规则：{resolved_profile.get('canonical_name', target_platform)}"
+        )
+    else:
+        resolved_profile["canonical_name"] = target_platform or resolved_profile.get(
+            "canonical_name", "通用图文平台"
+        )
+        resolved_profile["match_status"] = "未命中专用预设，已回退到通用图文规则。"
+
+    return resolved_profile
+
+
+def normalize_platform_name(value: Any) -> str:
+    text = str(value or "").strip().lower()
+    text = re.sub(r"[\s\-_（）()]+", "", text)
+    return text
+
+
+def format_platform_rule_pack(profile: dict[str, Any]) -> str:
+    sections = [
+        ("规则命中结果", [text_or_default(profile.get("match_status"), "已应用通用规则。")]),
+        ("建议篇幅", [text_or_default(profile.get("recommended_length"), "未设置")]),
+        ("推荐输出组成", list_or_default(profile.get("default_output_parts"), ["标题", "正文"])),
+        ("平台调性", list_or_default(profile.get("tone_rules"), ["保持信息清楚、表达自然。"])),
+        ("结构偏好", list_or_default(profile.get("structure_rules"), ["结构清楚，重点前置。"])),
+        ("标题规则", list_or_default(profile.get("title_rules"), ["标题与内容保持一致。"])),
+        ("开头规则", list_or_default(profile.get("opening_rules"), ["开头尽快进入主题。"])),
+        ("结尾规则", list_or_default(profile.get("ending_rules"), ["结尾做收束。"])),
+        ("互动与标签", list_or_default(profile.get("interaction_rules"), ["互动表达保持自然。"])),
+        ("风险规避", list_or_default(profile.get("avoid_rules"), ["不要偏离原意。"])),
+    ]
+
+    lines: list[str] = [f"平台规则来源：{profile.get('canonical_name', '通用图文平台')}"]
+    for title, values in sections:
+        lines.append(f"{title}：")
+        lines.extend(f"- {value}" for value in values)
+    return "\n".join(lines)
+
+
+def text_or_default(value: Any, default: str) -> str:
+    if value is None:
+        return default
+    text = str(value).strip()
+    return text if text else default
+
+
+def bool_or_default(value: Any, default: bool) -> bool:
+    if value is None:
+        return default
+    return bool(value)
+
+
+def list_or_default(value: Any, default: list[str]) -> list[str]:
+    if not isinstance(value, list):
+        return default
+    items = [str(item).strip() for item in value if str(item).strip()]
+    return items if items else default
 
 
 def stringify(value: Any) -> str:
@@ -235,4 +376,3 @@ def write_text(path: Path, content: str) -> None:
 
 if __name__ == "__main__":
     main()
-

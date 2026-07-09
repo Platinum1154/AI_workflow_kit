@@ -21,6 +21,8 @@
 ai_workflow_kit/
 ├── README.md
 ├── .gitignore
+├── config/
+│   └── platform-rules.yaml
 ├── pyproject.toml
 ├── prompts/
 │   ├── article-structuring.md
@@ -48,7 +50,7 @@ uv sync
 
 适合直接手动使用 prompt 的场景。
 
-1. 先填写 `templates/article-to-platform-input.example.yaml`，把所有输入字段补齐。
+1. 先填写 `templates/article-to-platform-input.example.yaml`，通常至少只需要补 `source_article`，其他字段按需补充。
 2. 打开 `prompts/article-structuring.md`，整理原始文章。
 3. 保存整理结果，作为后续平台成稿的中间材料。
 4. 打开 `prompts/platform-copywriting.md`，把中间材料转换成目标平台文稿。
@@ -68,7 +70,7 @@ uv run python scripts/run_workflow.py init
 
 默认会生成 `inputs/article-to-platform-input.yaml`。
 
-2. 填写输入 YAML，把平台要求、长度、输出项和保护规则补齐。
+2. 填写输入 YAML。现在通常只要贴入原文并确认 `target_platform`；脚本会自动把对应平台预设规则注入 prompt，只有你想更精确控制时再补其他字段。
 
 3. 如有需要，可在输入 YAML 的中间字段中补充“整理后的文章材料”或“平台文稿”。
 
@@ -78,7 +80,7 @@ uv run python scripts/run_workflow.py init
 uv run python scripts/run_workflow.py run --input inputs/article-to-platform-input.yaml
 ```
 
-5. 脚本会自动完成三份 prompt 模板的字段合并：
+5. 脚本会先根据 `target_platform` 命中 `config/platform-rules.yaml` 中的预设规则，再自动完成三份 prompt 模板的字段合并：
 
 - 整理原文 prompt 合并
 - 平台成稿 prompt 合并
@@ -115,6 +117,7 @@ uv run python scripts/run_workflow.py run --input inputs/article-to-platform-inp
 
 - 输入文章类型
 - 目标平台
+- 平台预设规则
 - 目标平台受众
 - 平台写作风格
 - 输出内容组成
@@ -128,6 +131,6 @@ uv run python scripts/run_workflow.py run --input inputs/article-to-platform-inp
 
 ## 后续你可以怎么改
 
-- 如果你后面确定了固定平台，可以直接复制 `prompts/platform-copywriting.md`，拆成多个平台专用 prompt。
+- 如果你后面要增加平台，只需要在 `config/platform-rules.yaml` 里补一组规则和别名。
 - 如果你后面确定了固定输出格式，可以继续把 `templates/` 里的输入字段收敛成更少的必填项。
 - 如果你后面要接入真实模型，可以在 `scripts/run_workflow.py` 的基础上继续加调用逻辑。

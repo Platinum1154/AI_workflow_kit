@@ -6,6 +6,8 @@ inputs:
   - source_article
   - structured_article_notes
   - target_platform
+  - platform_rule_name
+  - platform_rule_pack
   - platform_draft
   - facts_that_must_be_retained
   - terms_not_to_change
@@ -47,6 +49,9 @@ outputs:
 目标平台：
 {{target_platform}}
 
+命中的平台预设规则：
+{{platform_rule_pack}}
+
 平台文稿：
 {{platform_draft}}
 
@@ -71,6 +76,7 @@ outputs:
 
 输出要求：
 - 优先指出会改变原意的问题。
+- 同时检查文稿是否明显违背当前平台预设规则，尤其是篇幅、结构、开头方式和整体语气。
 - 如果发现新增信息，要明确标出对应句子或片段。
 - 修改建议要具体到可直接回填。
 ```

@@ -1,82 +1,62 @@
-# 原始文章信息
+# 这份输入文件现在按“少填也能用”设计。
+# 通常至少只需要填写 `source.source_article`。
+# 其他字段都有默认思路；只有你想更精确控制时再补。
+
+# 必填：原始文章
 source:
-  # 原文标题
-  source_title: "在这里填写原文标题"
-  # 原文语言，例如：中文、英文
-  source_language: "中文"
-  # 文章类型，例如：公众号文章、新闻稿、产品稿、通用文章
-  article_type: "通用文章"
+  # 可选：原文标题，没有也可以留空，让 prompt 自行概括
+  source_title: ""
   # 原始文章全文，直接粘贴在这里
   source_article: |
     在这里粘贴原始文章全文。
 
-# 原意保护规则
-meaning_rules:
-  # 是否必须严格保留核心信息，一般保持 true
-  core_message_must_be_preserved: true
-  # 是否允许压缩内容
-  compression_allowed: false
-  # 是否允许为了适配平台而调整原文结构
-  structure_reorganization_allowed: false
-  # 是否允许在不改变原意的前提下换一种表达方式
-  rephrasing_allowed_without_changing_meaning: true
-  # 是否允许补充原文没有的新信息，一般保持 false
-  new_information_allowed: false
-
-# 目标平台信息
+# 常用设置：修改 `target_platform` 后，脚本会自动注入对应平台的预设规则。
+# 当前内置常见平台：知乎、小红书、公众号、微博、抖音、B站。
+# 如果没有命中，会自动回退到通用图文规则。
 platform:
-  # 目标平台名称，例如：小红书、公众号、知乎、微博
-  target_platform: "在这里填写目标平台"
-  # 目标受众，例如：大学生、职场人、宝妈、产品经理
-  target_audience: "在这里填写目标受众"
-  # 平台风格要求，写清楚语气、结构、节奏、表达方式
+  # 不改的话默认就按知乎来用
+  target_platform: "知乎"
+  # 可选：如果不填，prompt 会根据原文推断最合适的读者群体
+  target_audience: ""
+  # 可选：这里只写“额外补充要求”。
+  # 目标平台的基础规则会由脚本按 `target_platform` 自动带入 prompt。
   platform_style_requirements: |
-    在这里填写平台写作风格要求。
-  # 文稿长度要求，例如：300-500字、1000字以内
-  length_requirement: "在这里填写长度要求"
+    
+  # 可选：留空时默认按目标平台预设篇幅处理
+  length_requirement: ""
 
-# 输出内容要求
+# 按需补充：下面几项留空时，会优先按目标平台预设自动填充
 output:
-  # 最终文稿必须包含哪些部分，例如：标题、正文、摘要、标签、结尾引导
-  required_output_parts:
-    - "标题"
-    - "正文"
-  # 标题要求，例如：要有钩子、不要夸张、控制字数
-  headline_requirement: "在这里填写标题要求"
-  # 开头要求，例如：前两句点出主题、先抛问题
-  hook_requirement: "在这里填写开头要求"
-  # 结尾要求，例如：总结收束、互动提问、行动引导
-  ending_requirement: "在这里填写结尾要求"
-  # 标签要求，例如：是否需要 hashtags、数量限制、风格限制
-  tag_requirement: "在这里填写标签要求"
+  # 一般不用改，除非你有特殊交付格式；留空则按平台预设组成
+  required_output_parts: []
+  # 留空则按平台预设标题规则
+  headline_requirement: ""
+  # 留空则按平台预设开头规则
+  hook_requirement: ""
+  # 留空则按平台预设结尾规则
+  ending_requirement: ""
+  # 留空则按平台预设标签规则
+  tag_requirement: ""
 
-# 内容保护与限制
+# 按需补充：只有你确实有不能丢的信息时再填
 content_guardrails:
-  # 后续改写时必须保留的事实，建议一条一条列清楚
-  facts_that_must_be_retained:
-    - "在这里填写必须保留的事实 1"
-    - "在这里填写必须保留的事实 2"
-  # 不允许被替换、改写或删掉的术语、专有名词、固定表述
-  terms_not_to_change:
-    - "在这里填写不可改动的术语 1"
-    - "在这里填写不可改动的术语 2"
-  # 额外约束，例如：不能口语化、不能加入案例、不能改动立场
+  # 可留空：不填时 prompt 会先自行提炼关键事实
+  facts_that_must_be_retained: []
+  # 可留空：有专有名词、产品名、方法名时再填
+  terms_not_to_change: []
+  # 可选：例如“不要写得像营销文”“保留原文立场”“不要新增案例”
   extra_constraints: |
-    在这里填写额外限制、禁区或特殊说明。
+    严格保留原意，不要补充原文没有的新事实、新数据、新案例。
 
-# 可选中间字段
+# 高级设置：通常先不用填，后面人工跑完上一步再回填
 intermediate:
-  # 如果你已经有人手整理好的文章结构，可以直接填在这里，供第二步模板合并使用
   structured_article_notes: |
-    在这里填写整理后的文章材料；如果暂时没有，可以先留空。
-  # 如果你已经有人手写好的平台文稿，可以直接填在这里，供第三步模板合并使用
+    
   platform_draft: |
-    在这里填写平台文稿；如果暂时没有，可以先留空。
+    
 
-# 运行配置
+# 运行配置：一般保持默认
 runtime:
-  # 输出目录，留空时默认输出到仓库根目录下的 outputs/
   output_dir: "outputs"
-  # 复核阶段的重点关注项
   review_focus: |
     重点检查是否偏离原意、是否遗漏关键事实、是否新增原文没有的信息。

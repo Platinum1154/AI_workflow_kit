@@ -7,8 +7,9 @@ from pathlib import Path
 from workflow_core import (
     DEFAULT_OUTPUT_DIR,
     ROOT,
-    build_article_to_platform_context,
+    build_render_context,
     configure_stdio as core_configure_stdio,
+    load_workflow_definition,
     load_yaml_dict,
     make_run_dir,
     render_prompt_template,
@@ -83,34 +84,26 @@ def run_pipeline(input_path_str: str, output_dir_str: str | None) -> None:
         raise SystemExit(f"找不到输入文件：{input_path}")
 
     config = load_yaml_dict(input_path)
-    context = build_article_to_platform_context(config)
+    workflow = load_workflow_definition("article-to-platform")
+    context = build_render_context(config)
     runtime = config.get("runtime", {})
     output_root = Path(output_dir_str or runtime.get("output_dir") or DEFAULT_OUTPUT_DIR)
     run_dir = make_run_dir(output_root, context["target_platform"], input_path.stem)
 
     print(f"运行目录：{run_dir}")
 
-    stage1 = render_prompt_template(ROOT / "prompts" / "article-structuring.md", context)
-    write_text(run_dir / "01-article-structuring.merged.txt", stage1)
-
-    stage2_context = dict(context)
-    stage2_context["structured_article_notes"] = context["structured_article_notes"]
-    stage2 = render_prompt_template(ROOT / "prompts" / "platform-copywriting.md", stage2_context)
-    write_text(run_dir / "02-platform-copywriting.merged.txt", stage2)
-
-    stage3_context = dict(stage2_context)
-    stage3_context["platform_draft"] = context["platform_draft"]
-    stage3 = render_prompt_template(ROOT / "prompts" / "platform-copy-review.md", stage3_context)
-    write_text(run_dir / "03-platform-copy-review.merged.txt", stage3)
+    generated_files: list[str] = []
+    for step in workflow["steps"]:
+        rendered = render_prompt_template(Path(step["prompt_path"]), context)
+        output_name = f"{step['index']:02d}-{step['id']}.merged.txt"
+        write_text(run_dir / output_name, rendered)
+        generated_files.append(output_name)
 
     summary = {
         "input_file": str(input_path),
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "files": [
-            "01-article-structuring.merged.txt",
-            "02-platform-copywriting.merged.txt",
-            "03-platform-copy-review.merged.txt",
-        ],
+        "workflow_id": workflow["id"],
+        "files": generated_files,
     }
     write_text(
         run_dir / "run-summary.json",

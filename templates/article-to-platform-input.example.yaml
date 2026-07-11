@@ -55,6 +55,13 @@ intermediate:
   platform_draft: |
     
 
+# 复核与终稿：通常先不用填，第三步和第四步会自动回填
+review:
+  latest_report: |
+    
+  final_article: |
+    
+
 # 运行配置：一般保持默认
 runtime:
   output_dir: "outputs"

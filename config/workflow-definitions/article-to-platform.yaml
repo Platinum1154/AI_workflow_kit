@@ -1,6 +1,6 @@
 id: article-to-platform
-name: 文章整理到平台成稿
-description: 先整理原文，再生成平台稿，最后做质检复核。
+name: 文章整理到平台终稿
+description: 先整理原文，再生成平台稿，随后做质检复核，最后统一生成终稿。
 input_template: templates/article-to-platform-input.example.yaml
 field_labels:
   source: 原文信息
@@ -29,7 +29,7 @@ field_labels:
   runtime.review_focus: 复核重点
   review: 复核结果
   review.final_article: 最终可交付文稿
-  review.latest_report: 最新质检报告
+  review.latest_report: 审查报告
 field_placeholders:
   source.source_title: 如无标题可留空，后续会按原文自动概括
   source.source_article: 在这里粘贴原始文章全文
@@ -48,7 +48,7 @@ field_placeholders:
   intermediate.platform_draft: 完成“平台成稿”后，这里会自动回填平台文稿
   runtime.output_dir: 默认 outputs，可按需改成别的输出目录
   runtime.review_focus: 可补充本轮最关心的复核重点
-  review.final_article: 完成“质检复核”后，这里会自动回填修订后的最终文章
+  review.final_article: 完成“最终写作”后，这里会自动回填最终文章
   review.latest_report: 完成“质检复核”后，这里会自动回填审查报告
 field_help:
   source.source_title: 原文没有标题时可以先留空，不会影响生成第一步提示词。
@@ -65,8 +65,8 @@ field_help:
   intermediate.platform_draft: 如果你在外部改过成稿，也可以直接贴回这里继续复核。
   runtime.output_dir: 控制脚本输出目录，不影响当前页面会话保存目录。
   runtime.review_focus: 会直接进入第三步质检提示词。
-  review.final_article: 这是第三步最终产出的可直接使用文稿。
-  review.latest_report: 这是复核步骤的审查报告存放位置。
+  review.final_article: 这是第四步最终产出的可直接使用文稿。
+  review.latest_report: 这是第三步复核步骤的审查报告存放位置。
 state_defaults:
   review:
     final_article: ""
@@ -97,19 +97,28 @@ steps:
       - intermediate.structured_article_notes
   - id: platform-copy-review
     title: 质检复核
-    response_target_label: 最终可交付文稿
+    response_target_label: 审查报告
     prompt_template: prompts/platform-copy-review.md
     prompt_file: 03-platform-copy-review.prompt.txt
     response_file: 03-platform-copy-review.response.md
-    primary_output_file: final-reviewed-article.md
-    response_target: review.final_article
-    extra_output_blocks:
-      - id: review_report
-        title: 最新质检报告
-        target_path: review.latest_report
-        output_file: review-report.md
+    primary_output_file: review-report.md
+    response_target: review.latest_report
     required_before_generate:
       - source.source_article
       - platform.target_platform
       - intermediate.structured_article_notes
       - intermediate.platform_draft
+  - id: final-article-writing
+    title: 最终写作
+    response_target_label: 最终可交付文稿
+    prompt_template: prompts/final-article-writing.md
+    prompt_file: 04-final-article-writing.prompt.txt
+    response_file: 04-final-article-writing.response.md
+    primary_output_file: final-reviewed-article.md
+    response_target: review.final_article
+    required_before_generate:
+      - source.source_article
+      - platform.target_platform
+      - intermediate.structured_article_notes
+      - intermediate.platform_draft
+      - review.latest_report

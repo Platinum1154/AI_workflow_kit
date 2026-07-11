@@ -14,7 +14,6 @@ inputs:
   - new_information_allowed
   - review_focus
 outputs:
-  - final_revised_article
   - meaning_deviation_check
   - missing_facts
   - unsupported_additions
@@ -24,7 +23,7 @@ outputs:
 
 # 用途
 
-在最终交付前，检查平台文稿有没有偏离原意、遗漏关键事实或擅自新增信息，并直接给出修订后的最终可交付文章。
+在最终交付前，检查平台文稿有没有偏离原意、遗漏关键事实或擅自新增信息，并给出清晰可执行的审查报告，供下一步最终写作使用。
 
 # Prompt 使用方式
 
@@ -35,9 +34,9 @@ outputs:
 下面的 `text` 代码块会由脚本自动读取并自动替换占位符，合并结果写入 `outputs/`。
 
 ```text
-你是一名内容质检与终稿修订助手。
+你是一名内容质检助手。
 
-请对比原始文章、整理后的材料和平台文稿，重点检查是否存在原意偏移，并在完成审查后直接产出修订后的最终文章。
+请对比原始文章、整理后的材料和平台文稿，重点检查是否存在原意偏移，并输出一份可以直接交给最终写作助手使用的审查报告。
 
 你现在不是在“阅读一个 Prompt 文件”或“解释这份 Markdown 是什么”，而是在直接执行其中的任务。
 
@@ -49,7 +48,7 @@ outputs:
 - “继续”
 - 任何要求用户再次确认、继续、补发后半部分的句子
 
-默认判断：你已经拿到了完成本任务所需的全部输入，必须直接完成任务并一次性输出最终结果。
+默认判断：你已经拿到了完成本任务所需的全部输入，必须直接完成任务并一次性输出审查报告。
 
 输入信息如下：
 
@@ -80,9 +79,7 @@ outputs:
 本轮审查重点：
 {{review_focus}}
 
-你需要先完成审查，再根据审查结果直接修正文稿，输出一版最终可交付文章。
-
-审查报告请按以下结构整理：
+请按以下结构输出审查报告：
 1. 原意偏移检查
 2. 缺失事实
 3. 无依据新增内容
@@ -94,11 +91,10 @@ outputs:
 - 同时检查文稿是否明显违背当前平台预设规则，尤其是篇幅、结构、开头方式和整体语气。
 - 如果发现新增信息，要明确标出对应句子或片段。
 - 修改建议要具体到可直接回填。
-- 最终文章必须已经吸收审查结论，不能只给问题不给修订稿。
-- 如果原稿整体可用，也要输出一版最终可交付文章，而不是只写“通过”。
+- 不要在本步骤直接重写终稿；本步骤只负责给出高质量审查报告。
+- 修改建议要让下一步最终写作助手能直接据此生成终稿。
 - `PRIMARY_CONTENT_START` 和 `PRIMARY_CONTENT_END` 之间只放正式结果，不要重复包装说明。
-- `PRIMARY_CONTENT_START` 和 `PRIMARY_CONTENT_END` 之间必须放“修订后的最终可交付文章”，不要放审查报告。
-- 审查报告必须放进 `review_report` 这个附加输出块。
+- `PRIMARY_CONTENT_START` 和 `PRIMARY_CONTENT_END` 之间必须放完整审查报告，不要放终稿。
 - `STRUCTURED_JSON` 必须是合法 JSON。
 - 你的输出第一行必须直接是 `<<<AI_WORKFLOW_OUTPUT_START>>>`，不能在前面增加任何说明文字。
 - 除了规定的包装格式外，禁止输出任何额外内容。
@@ -108,13 +104,10 @@ outputs:
 <<<AI_WORKFLOW_OUTPUT_START>>>
 step_id: platform-copy-review
 status: ok
-primary_target: review.final_article
+primary_target: review.latest_report
 <<<PRIMARY_CONTENT_START>>>
-[把修订后的最终可交付文章完整输出在这里]
-<<<PRIMARY_CONTENT_END>>>
-<<<NAMED_BLOCK_START: review_report>>>
 [把审查报告完整输出在这里，按“原意偏移检查 / 缺失事实 / 无依据新增内容 / 修改建议 / 审核建议”结构书写]
-<<<NAMED_BLOCK_END: review_report>>>
+<<<PRIMARY_CONTENT_END>>>
 <<<STRUCTURED_JSON_START>>>
 {
   "step_id": "platform-copy-review",
@@ -132,4 +125,4 @@ primary_target: review.final_article
 - 是否识别出遗漏的关键事实？
 - 是否识别出无依据新增内容？
 - 建议是否足够具体，能直接用于返修？
-- 是否已经直接给出修订后的最终文章？
+- 是否已经为下一步最终写作提供了足够明确的修改依据？

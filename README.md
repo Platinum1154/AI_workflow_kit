@@ -14,7 +14,7 @@
 
 ## 这个仓库现在做什么
 
-把一篇输入文章的要求整理清楚，并生成三个阶段的“已合并模板结果”，供你后续继续使用，同时严格保留原意相关约束。
+把一篇输入文章的要求整理清楚，并生成四个阶段的“已合并模板结果”，供你后续继续使用，同时严格保留原意相关约束。
 
 ## 当前原则
 
@@ -35,7 +35,8 @@ ai_workflow_kit/
 ├── prompts/
 │   ├── article-structuring.md
 │   ├── platform-copywriting.md
-│   └── platform-copy-review.md
+│   ├── platform-copy-review.md
+│   └── final-article-writing.md
 ├── scripts/
 │   └── run_workflow.py
 ├── workflows/
@@ -63,8 +64,9 @@ uv sync
 3. 保存整理结果，作为后续平台成稿的中间材料。
 4. 打开 `prompts/platform-copywriting.md`，把中间材料转换成目标平台文稿。
 5. 检查标题、正文、结尾和标签是否符合本次平台要求。
-6. 打开 `prompts/platform-copy-review.md`，对原文、整理材料和平台文稿做一轮对照检查。
-7. 根据检查结果手动修正，直到文稿既符合平台需求，又没有偏离原意。
+6. 打开 `prompts/platform-copy-review.md`，对原文、整理材料和平台文稿做一轮对照检查，得到审查报告。
+7. 打开 `prompts/final-article-writing.md`，把原文、整理材料、平台文稿和审查报告统一交给最终写作助手生成终稿。
+8. 如有需要，再做最后一轮人工微调。
 
 ### 技术方案
 
@@ -88,11 +90,12 @@ uv run python scripts/run_workflow.py init
 uv run python scripts/run_workflow.py run --input inputs/article-to-platform-input.yaml
 ```
 
-5. 脚本会先根据 `target_platform` 命中 `config/platform-rules.yaml` 中的预设规则，再自动完成三份 prompt 模板的字段合并：
+5. 脚本会先根据 `target_platform` 命中 `config/platform-rules.yaml` 中的预设规则，再自动完成四份 prompt 模板的字段合并：
 
 - 整理原文 prompt 合并
 - 平台成稿 prompt 合并
 - 文稿复核 prompt 合并
+- 最终写作 prompt 合并
 
 6. 到 `outputs/<时间戳-平台名>/` 中查看合并后的结果文件。
 
@@ -103,6 +106,7 @@ uv run python scripts/run_workflow.py run --input inputs/article-to-platform-inp
 - `01-article-structuring.merged.txt`
 - `02-platform-copywriting.merged.txt`
 - `03-platform-copy-review.merged.txt`
+- `04-final-article-writing.merged.txt`
 - `run-summary.json`
 
 ## 常用命令

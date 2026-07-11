@@ -4,6 +4,14 @@
 
 当前版本使用 `uv + Python` 自动把输入字段合并进 prompt 模板，并把结果写入 `outputs/`，不直接调用大模型 API。
 
+现在额外提供一个本地可视化版本 `Workflow Studio`：
+
+- 表单编辑当前输入
+- 自动保存到仓库会话目录
+- 按工作流步骤生成 prompt
+- 粘贴 AI 输出后自动解析
+- 自动写回下一步所需字段，并生成下一步 prompt
+
 ## 这个仓库现在做什么
 
 把一篇输入文章的要求整理清楚，并生成三个阶段的“已合并模板结果”，供你后续继续使用，同时严格保留原意相关约束。
@@ -110,6 +118,44 @@ uv run python scripts/run_workflow.py init --force
 ```bash
 uv run python scripts/run_workflow.py run --input inputs/article-to-platform-input.yaml
 ```
+
+启动本地可视化版本：
+
+```bash
+uv run python scripts/workflow_studio.py
+```
+
+默认地址：
+
+```text
+http://127.0.0.1:8765
+```
+
+## Workflow Studio 第一版怎么用
+
+1. 启动 `Workflow Studio`。
+2. 新建一个工作流会话。
+3. 在页面里填表，内容会自动保存到 `outputs/studio-sessions/<session-id>/input.yaml`。
+4. 选择当前步骤，点击“生成 Prompt”。
+5. 复制 Prompt 去问 AI。
+6. 把 AI 完整输出粘贴回页面；粘贴区草稿也会自动保存。
+7. 点击“保存并解析”。
+8. 系统会自动把本步主结果写回会话数据，并尝试直接生成下一步 Prompt。
+
+## 第一版的可配置方式
+
+当前工作流不是写死在页面里的，而是来自：
+
+- `config/workflow-definitions/*.yaml`
+- `prompts/*.md`
+
+你后面如果想扩流程，第一版支持这套方式：
+
+1. 新增一个工作流定义 YAML。
+2. 在步骤里指定 prompt 模板、保存文件名、回填目标字段、生成前必填字段。
+3. 在 prompt 中保持 `{{字段名}}` 占位符，并严格使用当前约定的输出包装格式。
+
+这样页面会按工作流定义渲染步骤，后端会按配置保存和串联上下文。
 
 ## 这版保留了哪些可改项
 

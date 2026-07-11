@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>工作流工作台</title>
+    <link rel="stylesheet" href="/app.css">
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="rail">
+        <div class="brand">
+          <p class="eyebrow">AI 工作流工具箱</p>
+          <h1>工作流工作台</h1>
+          <p class="subtle">可配置流程、文件保存、粘贴回填、自动生成下一步。</p>
+        </div>
+
+        <section class="panel">
+          <label class="label" for="workflowSelect">工作流</label>
+          <select id="workflowSelect"></select>
+          <button id="createSessionButton" class="primary wide">新建会话</button>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>已保存会话</h2>
+            <button id="refreshSessionsButton" class="ghost">刷新</button>
+          </div>
+          <div id="sessionList" class="session-list"></div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">当前会话</p>
+            <h2 id="sessionTitle">未选择</h2>
+          </div>
+          <div class="topbar-actions">
+            <span id="autosaveStatus" class="status-pill">未保存</span>
+            <button id="manualSaveButton" class="ghost">立即保存</button>
+          </div>
+        </header>
+
+        <section class="content-grid">
+          <div class="panel form-panel">
+            <div class="section-head">
+              <h2>输入表单</h2>
+              <p class="subtle">修改后会自动写入当前会话目录。</p>
+            </div>
+            <div id="formRoot" class="form-root"></div>
+          </div>
+
+          <div class="panel step-panel">
+            <div class="section-head">
+              <h2>流程步骤</h2>
+              <p class="subtle">选择步骤，生成提示词，粘贴 AI 输出后自动解析。</p>
+            </div>
+            <div id="stepList" class="step-list"></div>
+          </div>
+        </section>
+
+        <section class="panel editor-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">步骤工作区</p>
+              <h2 id="activeStepTitle">未选择步骤</h2>
+            </div>
+            <div class="editor-actions">
+              <button id="generatePromptButton" class="primary">生成提示词</button>
+              <button id="copyPromptButton" class="ghost">复制提示词</button>
+            </div>
+          </div>
+
+          <div id="stepMeta" class="meta-strip"></div>
+
+          <label class="label" for="promptOutput">提示词</label>
+          <textarea id="promptOutput" class="mono large" readonly></textarea>
+
+          <div class="section-head response-head">
+            <div>
+              <h3>AI 输出回填</h3>
+              <p class="subtle">这里的草稿也会自动保存到当前会话。</p>
+            </div>
+            <button id="submitResponseButton" class="primary">保存并解析</button>
+          </div>
+          <textarea id="responseInput" class="mono large" placeholder="把 AI 的完整输出原样粘贴到这里。"></textarea>
+
+          <div class="section-head">
+            <h3>解析结果</h3>
+          </div>
+          <pre id="parseResult" class="parse-box"></pre>
+
+          <div class="section-head">
+            <h3>本步提取结果</h3>
+          </div>
+          <textarea id="extractedOutput" class="mono large" readonly></textarea>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

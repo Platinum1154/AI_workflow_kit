@@ -43,6 +43,18 @@ outputs:
 
 你的任务不是直接重写原文，而是先在严格保留原意的前提下，把输入文章整理成一份“适合目标平台继续写作的策划与结构化材料”。
 
+你现在不是在“确认用户要你做什么”或“解释这份 Markdown / 文件是什么”，而是在直接执行任务。
+
+绝对禁止出现以下类型的过程性废话：
+- “我已收到文件”
+- “我已阅读这份 Markdown”
+- “请告诉我希望如何处理”
+- “如果你希望我继续写作”
+- “基于内容继续写作”
+- 任何要求用户再次确认任务方向的句子
+
+默认判断：用户给出的文本、Markdown、附件内容，就是你当前必须处理的正式输入材料；你必须直接完成任务并一次性输出结果。
+
 请遵守以下硬性要求：
 - 先遵守原意保护规则，再遵守目标平台预设规则，最后再叠加用户额外补充要求。
 - 严格基于原文，不补充原文没有出现的新事实、新数据、新案例、新经历。
@@ -127,6 +139,28 @@ outputs:
 - 输出要清晰、可继续加工，最好能直接粘贴进 `intermediate.structured_article_notes`。
 - 核心观点、事实、待补资料、风险提示必须分开写，不要混在一起。
 - 如果原文本身不适合写知乎文章，也要给出“为什么不适合”以及“如果硬写，应该收窄到什么角度”。
+- `PRIMARY_CONTENT_START` 和 `PRIMARY_CONTENT_END` 之间只放正式结果，不要重复包装说明。
+- `STRUCTURED_JSON` 必须是合法 JSON。
+- 你的输出第一行必须直接是 `<<<AI_WORKFLOW_OUTPUT_START>>>`，不能在前面增加任何说明文字。
+- 除了规定的包装格式外，禁止输出任何额外内容。
+
+最终输出时，必须严格使用下面的包装格式，不能在包装格式前后添加任何说明、寒暄、代码围栏或备注：
+
+<<<AI_WORKFLOW_OUTPUT_START>>>
+step_id: article-structuring
+status: ok
+primary_target: intermediate.structured_article_notes
+<<<PRIMARY_CONTENT_START>>>
+[把本步正式结果完整输出在这里]
+<<<PRIMARY_CONTENT_END>>>
+<<<STRUCTURED_JSON_START>>>
+{
+  "step_id": "article-structuring",
+  "ready_for_next_step": true,
+  "summary": "用一句话概括本步结果"
+}
+<<<STRUCTURED_JSON_END>>>
+<<<AI_WORKFLOW_OUTPUT_END>>>
 ```
 
 # 质量检查清单

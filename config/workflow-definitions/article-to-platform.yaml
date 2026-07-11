@@ -1,0 +1,115 @@
+id: article-to-platform
+name: 文章整理到平台成稿
+description: 先整理原文，再生成平台稿，最后做质检复核。
+input_template: templates/article-to-platform-input.example.yaml
+field_labels:
+  source: 原文信息
+  source.source_title: 原文标题
+  source.source_article: 原文全文
+  platform: 平台设置
+  platform.target_platform: 目标平台
+  platform.target_audience: 目标读者
+  platform.platform_style_requirements: 平台补充要求
+  platform.length_requirement: 长度要求
+  output: 输出要求
+  output.required_output_parts: 必须包含的部分
+  output.headline_requirement: 标题要求
+  output.hook_requirement: 开头要求
+  output.ending_requirement: 结尾要求
+  output.tag_requirement: 标签要求
+  content_guardrails: 内容约束
+  content_guardrails.facts_that_must_be_retained: 必须保留的事实
+  content_guardrails.terms_not_to_change: 不可改动的术语
+  content_guardrails.extra_constraints: 额外限制
+  intermediate: 中间结果
+  intermediate.structured_article_notes: 整理后的文章材料
+  intermediate.platform_draft: 平台文稿
+  runtime: 运行设置
+  runtime.output_dir: 输出目录
+  runtime.review_focus: 复核重点
+  review: 复核结果
+  review.final_article: 最终可交付文稿
+  review.latest_report: 最新质检报告
+field_placeholders:
+  source.source_title: 如无标题可留空，后续会按原文自动概括
+  source.source_article: 在这里粘贴原始文章全文
+  platform.target_audience: 如不填写，后续会根据原文推断最适合的核心读者群体
+  platform.platform_style_requirements: 这里只写额外补充要求，例如“不要写得像营销文”“语气更克制”
+  platform.length_requirement: 留空时默认按目标平台预设篇幅处理
+  output.required_output_parts: 每行一项，例如：标题、正文、结尾总结
+  output.headline_requirement: 留空时按平台预设标题规则处理
+  output.hook_requirement: 留空时按平台预设开头规则处理
+  output.ending_requirement: 留空时按平台预设结尾规则处理
+  output.tag_requirement: 留空时按平台预设标签规则处理
+  content_guardrails.facts_that_must_be_retained: 每行一项，不填时会先自行提炼关键事实
+  content_guardrails.terms_not_to_change: 每行一项，例如产品名、术语名、方法名
+  content_guardrails.extra_constraints: 例如“不要新增案例”“保留原文立场”“不要写得像营销文”
+  intermediate.structured_article_notes: 完成“原文整理”后，这里会自动回填本步主结果
+  intermediate.platform_draft: 完成“平台成稿”后，这里会自动回填平台文稿
+  runtime.output_dir: 默认 outputs，可按需改成别的输出目录
+  runtime.review_focus: 可补充本轮最关心的复核重点
+  review.final_article: 完成“质检复核”后，这里会自动回填修订后的最终文章
+  review.latest_report: 完成“质检复核”后，这里会自动回填审查报告
+field_help:
+  source.source_title: 原文没有标题时可以先留空，不会影响生成第一步提示词。
+  source.source_article: 这是当前流程最关键的输入，至少需要填写这里和目标平台。
+  platform.target_platform: 默认按知乎处理，也可以改成小红书、公众号、微博、抖音、B站等。
+  platform.target_audience: 不填也能运行，系统会把“让 AI 自行判断读者”写进提示词。
+  platform.platform_style_requirements: 这里只写额外要求，平台基础规则会自动注入。
+  platform.length_requirement: 留空时会优先使用目标平台的推荐篇幅。
+  output.required_output_parts: 不填时按平台预设输出组成处理；填写时每行一项更方便。
+  content_guardrails.facts_that_must_be_retained: 如果有绝对不能丢的信息，建议明确写出来。
+  content_guardrails.terms_not_to_change: 有专有名词、产品名、方法名时再填。
+  content_guardrails.extra_constraints: 这里适合放“绝对不要做什么”。
+  intermediate.structured_article_notes: 你也可以手动改这里，再重新生成后续步骤提示词。
+  intermediate.platform_draft: 如果你在外部改过成稿，也可以直接贴回这里继续复核。
+  runtime.output_dir: 控制脚本输出目录，不影响当前页面会话保存目录。
+  runtime.review_focus: 会直接进入第三步质检提示词。
+  review.final_article: 这是第三步最终产出的可直接使用文稿。
+  review.latest_report: 这是复核步骤的审查报告存放位置。
+state_defaults:
+  review:
+    final_article: ""
+    latest_report: ""
+steps:
+  - id: article-structuring
+    title: 原文整理
+    response_target_label: 整理后的文章材料
+    prompt_template: prompts/article-structuring.md
+    prompt_file: 01-article-structuring.prompt.txt
+    response_file: 01-article-structuring.response.md
+    primary_output_file: structured-article-notes.md
+    response_target: intermediate.structured_article_notes
+    required_before_generate:
+      - source.source_article
+      - platform.target_platform
+  - id: platform-copywriting
+    title: 平台成稿
+    response_target_label: 平台文稿
+    prompt_template: prompts/platform-copywriting.md
+    prompt_file: 02-platform-copywriting.prompt.txt
+    response_file: 02-platform-copywriting.response.md
+    primary_output_file: final-platform-draft.md
+    response_target: intermediate.platform_draft
+    required_before_generate:
+      - source.source_article
+      - platform.target_platform
+      - intermediate.structured_article_notes
+  - id: platform-copy-review
+    title: 质检复核
+    response_target_label: 最终可交付文稿
+    prompt_template: prompts/platform-copy-review.md
+    prompt_file: 03-platform-copy-review.prompt.txt
+    response_file: 03-platform-copy-review.response.md
+    primary_output_file: final-reviewed-article.md
+    response_target: review.final_article
+    extra_output_blocks:
+      - id: review_report
+        title: 最新质检报告
+        target_path: review.latest_report
+        output_file: review-report.md
+    required_before_generate:
+      - source.source_article
+      - platform.target_platform
+      - intermediate.structured_article_notes
+      - intermediate.platform_draft
